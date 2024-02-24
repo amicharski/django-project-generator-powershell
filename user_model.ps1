@@ -8,10 +8,7 @@ python -m venv .\venv
 .\venv\Scripts\Activate.ps1
 
 @'
-Django>=5.0
-djangorestframework>=3.14
-Pillow>=10.0.1
-wheel>=0.42
+Django>=5.0.2
 '@ | Out-File -FilePath .\requirements.txt -Encoding utf8
 
 pip install -r requirements.txt
@@ -34,12 +31,12 @@ class ApplicationUser(AbstractBaseUser, PermissionsMixin):
         verbose_name = 'User'
         verbose_name_plural = 'Users'
 
-    email = models.EmailField(_("email address"), unique=True)
+    email = models.EmailField(_('email address'), unique=True)
     is_staff = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
     date_joined = models.DateTimeField(default=timezone.now)
 
-    USERNAME_FIELD = "email"
+    USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = []
 
     objects = ApplicationUserManager()
@@ -48,7 +45,7 @@ class ApplicationUser(AbstractBaseUser, PermissionsMixin):
         return self.email
 
     def get_absolute_url(self):
-        return reverse('user_detail', kwargs={"pk": self.pk})
+        return reverse('user_detail', kwargs={'pk': self.pk})
 
 '@ | Out-File -FilePath .\users\models.py -Encoding utf8
 
@@ -185,23 +182,23 @@ class ApplicationUserAdmin(UserAdmin):
     add_form = ApplicationUserCreationForm
     form = ApplicationUserChangeForm
     model = ApplicationUser
-    list_display = ("email", "is_staff", "is_active",)
-    list_filter = ("email", "is_staff", "is_active",)
+    list_display = ('email', 'is_staff', 'is_active',)
+    list_filter = ('email', 'is_staff', 'is_active',)
     fieldsets = (
-        (None, {"fields": ("email", "password")}),
-        ("Permissions", {"fields": ("is_staff", "is_active", "groups", "user_permissions")}),
+        (None, {'fields': ('email', 'password')}),
+        ('Permissions', {'fields': ('is_staff', 'is_active', 'groups', 'user_permissions')}),
     )
     add_fieldsets = (
         (None, {
-            "classes": ("wide",),
-            "fields": (
-                "email", "password1", "password2", "is_staff",
-                "is_active", "groups", "user_permissions"
+            'classes': ('wide',),
+            'fields': (
+                'email', 'password1', 'password2', 'is_staff',
+                'is_active', 'groups', 'user_permissions'
             )}
         ),
     )
-    search_fields = ("email",)
-    ordering = ("email",)
+    search_fields = ('email',)
+    ordering = ('email',)
 
 '@ | Out-File -FilePath .\users\admin.py -Encoding utf8
 
@@ -215,14 +212,14 @@ class ApplicationUserCreationForm(UserCreationForm):
 
     class Meta:
         model = ApplicationUser
-        fields = ("email",)
+        fields = ('email',)
 
 
 class ApplicationUserChangeForm(UserChangeForm):
 
     class Meta:
         model = ApplicationUser
-        fields = ("email",)
+        fields = ('email',)
 
 '@ | Out-File -FilePath .\users\forms.py -Encoding utf8
 
@@ -232,16 +229,16 @@ from django.utils.translation import gettext_lazy as _
 
 
 class ApplicationUserManager(BaseUserManager):
-    """
+    '''
     Custom user model manager where email is the unique identifiers
     for authentication instead of usernames.
-    """
+    '''
     def create_user(self, email, password, **extra_fields):
-        """
+        '''
         Create and save a user with the given email and password.
-        """
+        '''
         if not email:
-            raise ValueError(_("The Email must be set"))
+            raise ValueError(_('The Email must be set'))
         email = self.normalize_email(email)
         user = self.model(email=email, **extra_fields)
         user.set_password(password)
@@ -249,17 +246,17 @@ class ApplicationUserManager(BaseUserManager):
         return user
 
     def create_superuser(self, email, password, **extra_fields):
-        """
+        '''
         Create and save a SuperUser with the given email and password.
-        """
-        extra_fields.setdefault("is_staff", True)
-        extra_fields.setdefault("is_superuser", True)
-        extra_fields.setdefault("is_active", True)
+        '''
+        extra_fields.setdefault('is_staff', True)
+        extra_fields.setdefault('is_superuser', True)
+        extra_fields.setdefault('is_active', True)
 
-        if extra_fields.get("is_staff") is not True:
-            raise ValueError(_("Superuser must have is_staff=True."))
-        if extra_fields.get("is_superuser") is not True:
-            raise ValueError(_("Superuser must have is_superuser=True."))
+        if extra_fields.get('is_staff') is not True:
+            raise ValueError(_('Superuser must have is_staff=True.'))
+        if extra_fields.get('is_superuser') is not True:
+            raise ValueError(_('Superuser must have is_superuser=True.'))
         return self.create_user(email, password, **extra_fields)
 '@ | Out-File -FilePath .\users\managers.py -Encoding utf8
 
@@ -267,5 +264,3 @@ Write-Output 'Migrations are coming...'
 
 python manage.py makemigrations
 python manage.py migrate
-
-python manage.py createsuperuser --noinput --email admin@example.com
